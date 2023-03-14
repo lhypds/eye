@@ -52,7 +52,7 @@ while True:
     
     # Print the direction the face is facing
     if left_count + right_count > 30:
-        f = open("C:\\code\\github-gcc\\eye\\face_direction.txt", "w")
+        f = open("C:\\.keycache\\face_direction.txt", "w")
         if left_count > right_count:
             print("<-")
             f.write("<-")
