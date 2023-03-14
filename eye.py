@@ -52,7 +52,7 @@ while True:
     
     # Print the direction the face is facing
     if left_count + right_count > 30:
-        f = open("face_direction.txt", "w")
+        f = open("C:\\code\\github-gcc\\eye\\face_direction.txt", "w")
         if left_count > right_count:
             print("<-")
             f.write("<-")
@@ -64,7 +64,7 @@ while True:
 
     # Display the processed frame
     # No need to display the frame
-    #cv2.imshow('Eye Tracking', frame)
+    cv2.imshow('Eye Tracking', frame)
 
     # Exit the loop if the 'q' key is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):

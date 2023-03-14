@@ -23,13 +23,13 @@ def move_window_to_screen(hwnd, screen_number):
     window_height = window_rect[3] - window_rect[1]
 
     # Move the window to the target screen
-    win32gui.MoveWindow(hwnd, x + 70, y + 70, window_width, window_height, True)
+    win32gui.MoveWindow(hwnd, x + 25, y + 25, window_width, window_height, True)
 
 # Get the handle of the active window
 hwnd = win32gui.GetForegroundWindow()
 
 # Move the active window to the second screen
-f_path = Path("C:\\.keycache\\face_direction.txt")
+f_path = Path("C:\\code\\github-gcc\\eye\\face_direction.txt")  #"C:\\code\\github-gcc\\eye\\face_direction.txt"
 f_path.touch(exist_ok=True)
 f = open(f_path, "r")
 face_direction = f.read()

@@ -1,0 +1,1 @@
+CreateObject("WScript.Shell").Run "C:\code\github-gcc\eye\run_eye_py.bat", 0, True
