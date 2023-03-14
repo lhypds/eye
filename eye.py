@@ -2,7 +2,7 @@ from time import sleep
 import cv2
 
 # Load the Haar cascade classifiers for detecting eyes
-eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+eye_cascade = cv2.CascadeClassifier("C:\\code\\github-gcc\\eye\\haarcascade_eye.xml")
 
 # Initialize the video capture device
 cap = cv2.VideoCapture(0)
