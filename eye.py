@@ -51,7 +51,7 @@ while True:
         right_count += 1
     
     # Print the direction the face is facing
-    if left_count + right_count > 30:
+    if left_count + right_count > 10:
         f = open("C:\\.keycache\\face_direction.txt", "w")
         if left_count > right_count:
             print("<-")
