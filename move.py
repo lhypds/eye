@@ -35,9 +35,10 @@ f = open(f_path, "r")
 face_direction = f.read()
 f.close()
 
-if face_direction == "<-":
-    move_window_to_screen(hwnd, 0)
-    print("Move to left screen")
-else: 
+if face_direction == "->":
     move_window_to_screen(hwnd, 1)
     print("Move to right screen")
+else: 
+    move_window_to_screen(hwnd, 0)
+    print("Move to left screen")
+    
