@@ -1,5 +1,7 @@
 from time import sleep
 import cv2
+import math
+
 
 # Load the Haar cascade classifiers for detecting eyes
 eye_cascade = cv2.CascadeClassifier("C:\\code\\github-gcc\\eye\\haarcascade_eye.xml")
@@ -10,6 +12,11 @@ cap = cv2.VideoCapture(0)
 # Count left and right eye frames
 left_count = right_count = 0
 
+
+def eye_distance(ex1, ex2, ey1, ey2):
+    return math.sqrt((ex1 - ex2) * (ex1 - ex2) + (ey1 - ey2) * (ey1 - ey2))
+
+
 while True:
     # Read a frame from the video capture device
     ret, frame = cap.read()
@@ -19,6 +26,11 @@ while True:
 
     # Detect eyes in the grayscale frame using the Haar cascade classifier
     eyes = eye_cascade.detectMultiScale(gray, 1.3, 5)
+    
+    # Filter out other eyes
+    for (ex, ey, ew, eh) in eyes:
+        if ew * eh < 1000:
+            eyes.remove((ex, ey, ew, eh))
 
     left_eye = None
     right_eye = None
@@ -45,26 +57,33 @@ while True:
     cv2.circle(frame, right_eye, 4, (0, 0, 255), -1)
 
     # Count the number of frames the eyes are facing left or right
-    if left_eye_size > right_eye_size:
+    diff_left_right = left_eye_size - right_eye_size
+    if diff_left_right > 0:
+        right_count += 1
+    elif diff_left_right < 0:
         left_count += 1
     else:
         right_count += 1
+        left_count += 1
     
     # Print the direction the face is facing
-    if left_count + right_count > 10:
+    if left_count + right_count >= 10:
         f = open("C:\\.keycache\\face_direction.txt", "w")
         if left_count > right_count:
-            print("<-")
+            print("diff = " + str(diff_left_right) + " : <-")
             f.write("<-")
-        else:
-            print("->")
+        elif left_count < right_count:
+            print(str(diff_left_right) + ": ->")
             f.write("->")
+        else:
+            print(str(diff_left_right) + ": =")
+            f.write("=")
         f.close()
         left_count = right_count = 0
 
     # Display the processed frame
     # No need to display the frame
-    #cv2.imshow('Eye Tracking', frame)
+    cv2.imshow('Eye Tracking', frame)
 
     # Exit the loop if the 'q' key is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
