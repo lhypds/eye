@@ -64,7 +64,7 @@ while True:
 
     # Display the processed frame
     # No need to display the frame
-    cv2.imshow('Eye Tracking', frame)
+    #cv2.imshow('Eye Tracking', frame)
 
     # Exit the loop if the 'q' key is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
