@@ -6,6 +6,7 @@ import os
 import dotenv
 dotenv.load_dotenv(dotenv.find_dotenv())
 
+DEBUG = False
 
 # Load the Haar cascade classifiers for detecting eyes
 eye_cascade = cv2.CascadeClassifier("C:\\code\\github-gcc\\eye\\haarcascade_eye.xml")
@@ -28,8 +29,26 @@ def get_eye_size(eye):
 def get_eye_center(eye):
     return eye[0] + eye[2] // 2, eye[1] + eye[3] // 2
 
+# Count result
+left_ct = right_ct = 0
+def count_result(result):
+    global left_ct
+    global right_ct
+    if result == "<-":
+        left_ct += 1
+    elif result == "->":
+        right_ct += 1
+    if left_ct + right_ct >= 100:
+        if left_ct > right_ct + 20:
+            output("<-")
+        elif right_ct > left_ct + 20:
+            output("->")
+        else:
+            output("==")
+        left_ct = right_ct = 0
+
 # Output the count to a file
-def output_result(result):
+def output(result):
     f = open("C:\\.keycache\\face_direction.txt", "w")
     print(result)
     f.write(result)
@@ -66,10 +85,10 @@ while True:
         cv2.circle(frame, get_eye_center(right_eye), 4, (0, 0, 255), -1)
     
     # Face direction detection
-    if frame_ct % 30 == 0:
-        print("eyes count: " + str(len(eyes)))
+    if frame_ct % 1 == 0:
+        if DEBUG: print("eyes count: " + str(len(eyes)))
         for i, eye in enumerate(eyes):
-            print("eye " + str(i) + ": " 
+            if DEBUG: print("eye " + str(i) + ": " 
                   + "location = (" + str(eye[0]) + ", " + str(eye[1]) + "), " 
                   + "width = " + str(eye[2]) + ", " 
                   + "height = " + str(eye[3]))
@@ -81,21 +100,21 @@ while True:
             eye_size_diff = get_eye_size(left_eye) - get_eye_size(right_eye)
             
             # Print out
-            print("eye height diff: " + str(height_diff))
-            print("distance: " + str(int(distance)))
-            print("left eye size: " + str(get_eye_size(left_eye)))
-            print("right eye size: " + str(get_eye_size(right_eye)))
-            print("average eye size: " + str(int(eye_size)))
-            print("eye size diff: " + str(eye_size_diff))
+            if DEBUG: print("eye height diff: " + str(height_diff))
+            if DEBUG: print("distance: " + str(int(distance)))
+            if DEBUG: print("left eye size: " + str(get_eye_size(left_eye)))
+            if DEBUG: print("right eye size: " + str(get_eye_size(right_eye)))
+            if DEBUG: print("average eye size: " + str(int(eye_size)))
+            if DEBUG: print("eye size diff: " + str(eye_size_diff))
             
             # Count the number of frames the eyes are facing left or right
             if eye_size_diff >= int(os.getenv("EYE_SIZE_DIFF")):
-                output_result("->")
+                count_result("->")
             else:
-                output_result("<-")
+                count_result("<-")
         else:
-            print("Pleae look at the camera and make sure there are exactly two eyes in the frame.")
-        print("-")
+            if DEBUG: print("Pleae look at the camera and make sure there are exactly two eyes in the frame.")
+        if DEBUG: print("-")
     
     # Display the processed frame
     if os.getenv("SHOW_CAMERA_VIEW") == "1":
