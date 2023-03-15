@@ -55,9 +55,9 @@ while True:
         height_diff = abs(eyes[0][3] - eyes[1][3])
         distance = eye_distance(eyes[0][0], eyes[1][0], eyes[0][1], eyes[1][1])
         eye_size = (eyes[0][2] * eyes[0][3] + eyes[1][2] * eyes[1][3]) / 2
-        print("eye height diff:" + str(height_diff))
-        print("distance:" + str(distance))
-        print("eye size:" + str(eye_size))
+        print("eye height diff: " + str(height_diff))
+        print("distance: " + str(distance))
+        print("eye size: " + str(eye_size))
         
         # Write to .env file
         dotenv.set_key(dotenv.find_dotenv(), "HEIGHT_DIFF", str(height_diff), quote_mode="never")
