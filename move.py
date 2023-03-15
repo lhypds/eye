@@ -38,7 +38,8 @@ f.close()
 if face_direction == "->":
     move_window_to_screen(hwnd, 1)
     print("Move to right screen")
-else: 
+elif face_direction == "<-": 
     move_window_to_screen(hwnd, 0)
     print("Move to left screen")
-    
+else:
+    print("No move")

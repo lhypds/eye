@@ -1,6 +1,7 @@
 from time import sleep
 import cv2
 import math
+import os
 
 import dotenv
 dotenv.load_dotenv(dotenv.find_dotenv())
@@ -16,27 +17,29 @@ cap = cv2.VideoCapture(0)
 left_count = right_count = 0
 
 # Calculate the distance between two points
-def eye_distance(ex1, ex2, ey1, ey2):
-    return math.sqrt((ex1 - ex2) * (ex1 - ex2) + (ey1 - ey2) * (ey1 - ey2))
+def get_eye_distance(eye1, eye2):
+    return math.sqrt((eye1[0] - eye2[0]) * (eye1[0] - eye2[0]) + (eye1[1] - eye2[1]) * (eye1[1] - eye2[1]))
+
+# Calculate the size of an eye
+def get_eye_size(eye):
+    return eye[2] * eye[3]
+
+# Calculate the center of an eye
+def get_eye_center(eye):
+    return eye[0] + eye[2] // 2, eye[1] + eye[3] // 2
 
 # Output the count to a file
-def output(left_count, right_count):
+def output_result(result):
     f = open("C:\\.keycache\\face_direction.txt", "w")
-    if left_count > right_count:
-        print("diff = " + str(diff_left_right) + " : <-")
-        f.write("<-")
-    elif left_count < right_count:
-        print(str(diff_left_right) + ": ->")
-        f.write("->")
-    else:
-        print(str(diff_left_right) + ": =")
-        f.write("=")
+    print(result)
+    f.write(result)
     f.close()
 
-# Frame looper
+frame_ct = 0
 while True:
     # Read a frame from the video capture device
     ret, frame = cap.read()
+    frame_ct += 1
 
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -48,54 +51,59 @@ while True:
     for (ex, ey, ew, eh) in eyes:
         cv2.rectangle(frame, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
     
-    # Eyes filtering
-    # 1. Two eyes should be at almost same height
-    # 2. Two eyes are not far apart
-    # 3. Eyes are not too big or too smalls
-
-    left_eye = right_eye = None
-    left_eye_size = right_eye_size = 0
-
-    # Find the left and right eye
-    for (ex, ey, ew, eh) in eyes:
-        # Calculate the centroid of the eye
-        cx, cy = ex + ew // 2, ey + eh // 2
-        
-        if left_eye is None or cx < left_eye[0]:
-            left_eye = (cx, cy)
-            left_eye_size = ew * eh
+    # Found two eyes
+    if len(eyes) == 2:
+        if eyes[0][0] > eyes[1][0]:
+            left_eye = eyes[0]
+            right_eye = eyes[1]
+        else:
+            left_eye = eyes[1]
+            right_eye = eyes[0]
             
-        if right_eye is None or cx > right_eye[0]:
-            right_eye = (cx, cy)
-            right_eye_size = ew * eh
+        # Draw a dot at the centroid of the eyes
+        # left eye is blue, right eye is red
+        cv2.circle(frame, get_eye_center(left_eye), 4, (255, 0, 0), -1)
+        cv2.circle(frame, get_eye_center(right_eye), 4, (0, 0, 255), -1)
     
-    # Draw a dot at the centroid of the eyes
-    # left eye is blue, right eye is red
-    cv2.circle(frame, left_eye, 4, (255, 0, 0), -1)
-    cv2.circle(frame, right_eye, 4, (0, 0, 255), -1)
+    # Face direction detection
+    if frame_ct % 30 == 0:
+        print("eyes count: " + str(len(eyes)))
+        for i, eye in enumerate(eyes):
+            print("eye " + str(i) + ": " 
+                  + "location = (" + str(eye[0]) + ", " + str(eye[1]) + "), " 
+                  + "width = " + str(eye[2]) + ", " 
+                  + "height = " + str(eye[3]))
 
-    # Count the number of frames the eyes are facing left or right
-    diff_left_right = left_eye_size - right_eye_size
-    if diff_left_right > 0:
-        right_count += 1
-    elif diff_left_right < 0:
-        left_count += 1
-    else:
-        right_count += 1
-        left_count += 1
-
-    # Output the direction the face is facing
-    if left_count + right_count >= 10:
-        output(left_count, right_count)
-        left_count = right_count = 0
-
+        if len(eyes) == 2:
+            height_diff = abs(left_eye[3] - right_eye[3])
+            distance = get_eye_distance(left_eye, right_eye)
+            eye_size = (get_eye_size(left_eye) + get_eye_size(right_eye)) / 2  # average size
+            eye_size_diff = get_eye_size(left_eye) - get_eye_size(right_eye)
+            
+            # Print out
+            print("eye height diff: " + str(height_diff))
+            print("distance: " + str(int(distance)))
+            print("left eye size: " + str(get_eye_size(left_eye)))
+            print("right eye size: " + str(get_eye_size(right_eye)))
+            print("average eye size: " + str(int(eye_size)))
+            print("eye size diff: " + str(eye_size_diff))
+            
+            # Count the number of frames the eyes are facing left or right
+            if eye_size_diff >= int(os.getenv("EYE_SIZE_DIFF")):
+                output_result("->")
+            else:
+                output_result("<-")
+        else:
+            print("Pleae look at the camera and make sure there are exactly two eyes in the frame.")
+        print("-")
+    
     # Display the processed frame
-    # No need to display the frame
-    cv2.imshow('Eye Tracking', frame)
-
-    # Exit the loop if the 'q' key is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    if os.getenv("SHOW_CAMERA_VIEW") == "1":
+        cv2.imshow('Eye Tracking', frame)
+    
+        # Exit the loop if the 'q' key is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 # Release the video capture device and close the window
 cap.release()
