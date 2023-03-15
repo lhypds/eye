@@ -23,7 +23,7 @@ def move_window_to_screen(hwnd, screen_number):
     window_height = window_rect[3] - window_rect[1]
 
     # Move the window to the target screen
-    win32gui.MoveWindow(hwnd, x + 0, y + 0, window_width, window_height, True)
+    win32gui.MoveWindow(hwnd, x + 0, y + 5, window_width, window_height, True)
 
 # Get the handle of the active window
 hwnd = win32gui.GetForegroundWindow()
