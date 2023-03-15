@@ -26,6 +26,20 @@ def get_eye_size(eye):
 def get_eye_center(eye):
     return eye[0] + eye[2] // 2, eye[1] + eye[3] // 2
 
+# Count eye size diff and save average to .env
+eye_size_diff_ct = 0
+eye_size_diff_sum = 0
+def count_eye_size_diff(result):
+    global eye_size_diff_ct
+    global eye_size_diff_sum
+    eye_size_diff_ct += 1
+    eye_size_diff_sum += result
+    if eye_size_diff_ct > 10:
+        dotenv.set_key(dotenv.find_dotenv(), "EYE_SIZE_DIFF", str(eye_size_diff_sum // 10), quote_mode="never")
+        print("Saved eye_size_diff as " + str(eye_size_diff_sum // 10))
+        eye_size_diff_ct = 0
+        eye_size_diff_sum = 0
+
 frame_ct = 0
 while True:
     # Read a frame from the video capture device
@@ -83,7 +97,7 @@ while True:
             dotenv.set_key(dotenv.find_dotenv(), "HEIGHT_DIFF", str(height_diff), quote_mode="never")
             dotenv.set_key(dotenv.find_dotenv(), "DISTANCE", str(int(distance)), quote_mode="never")
             dotenv.set_key(dotenv.find_dotenv(), "EYE_SIZE", str(int(eye_size)), quote_mode="never")
-            dotenv.set_key(dotenv.find_dotenv(), "EYE_SIZE_DIFF", str(int(eye_size_diff)), quote_mode="never")
+            count_eye_size_diff(eye_size_diff)
         else:
             print("Pleae look at the camera and make sure there are exactly two eyes in the frame.")
         print("-")

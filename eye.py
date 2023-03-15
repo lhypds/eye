@@ -38,10 +38,10 @@ def count_result(result):
         left_ct += 1
     elif result == "->":
         right_ct += 1
-    if left_ct + right_ct >= 100:
-        if left_ct > right_ct + 20:
+    if left_ct + right_ct >= 50:
+        if left_ct > right_ct + 10:
             output("<-")
-        elif right_ct > left_ct + 20:
+        elif right_ct > left_ct + 10:
             output("->")
         else:
             output("==")
