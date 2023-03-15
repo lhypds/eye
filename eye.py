@@ -2,6 +2,9 @@ from time import sleep
 import cv2
 import math
 
+import dotenv
+dotenv.load_dotenv(dotenv.find_dotenv())
+
 
 # Load the Haar cascade classifiers for detecting eyes
 eye_cascade = cv2.CascadeClassifier("C:\\code\\github-gcc\\eye\\haarcascade_eye.xml")
@@ -12,11 +15,25 @@ cap = cv2.VideoCapture(0)
 # Count left and right eye frames
 left_count = right_count = 0
 
-
+# Calculate the distance between two points
 def eye_distance(ex1, ex2, ey1, ey2):
     return math.sqrt((ex1 - ex2) * (ex1 - ex2) + (ey1 - ey2) * (ey1 - ey2))
 
+# Output the count to a file
+def output(left_count, right_count):
+    f = open("C:\\.keycache\\face_direction.txt", "w")
+    if left_count > right_count:
+        print("diff = " + str(diff_left_right) + " : <-")
+        f.write("<-")
+    elif left_count < right_count:
+        print(str(diff_left_right) + ": ->")
+        f.write("->")
+    else:
+        print(str(diff_left_right) + ": =")
+        f.write("=")
+    f.close()
 
+# Frame looper
 while True:
     # Read a frame from the video capture device
     ret, frame = cap.read()
@@ -26,21 +43,21 @@ while True:
 
     # Detect eyes in the grayscale frame using the Haar cascade classifier
     eyes = eye_cascade.detectMultiScale(gray, 1.3, 5)
-    
-    # Filter out other eyes
-    for (ex, ey, ew, eh) in eyes:
-        if ew * eh < 1000:
-            eyes.remove((ex, ey, ew, eh))
-
-    left_eye = None
-    right_eye = None
-    left_eye_size = 0
-    right_eye_size = 0
 
     # Draw rectangles around the detected eyes
     for (ex, ey, ew, eh) in eyes:
         cv2.rectangle(frame, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
-        
+    
+    # Eyes filtering
+    # 1. Two eyes should be at almost same height
+    # 2. Two eyes are not far apart
+    # 3. Eyes are not too big or too smalls
+
+    left_eye = right_eye = None
+    left_eye_size = right_eye_size = 0
+
+    # Find the left and right eye
+    for (ex, ey, ew, eh) in eyes:
         # Calculate the centroid of the eye
         cx, cy = ex + ew // 2, ey + eh // 2
         
@@ -52,7 +69,8 @@ while True:
             right_eye = (cx, cy)
             right_eye_size = ew * eh
     
-    # Draw a circle at the centroid of the eyes
+    # Draw a dot at the centroid of the eyes
+    # left eye is blue, right eye is red
     cv2.circle(frame, left_eye, 4, (255, 0, 0), -1)
     cv2.circle(frame, right_eye, 4, (0, 0, 255), -1)
 
@@ -65,20 +83,10 @@ while True:
     else:
         right_count += 1
         left_count += 1
-    
-    # Print the direction the face is facing
+
+    # Output the direction the face is facing
     if left_count + right_count >= 10:
-        f = open("C:\\.keycache\\face_direction.txt", "w")
-        if left_count > right_count:
-            print("diff = " + str(diff_left_right) + " : <-")
-            f.write("<-")
-        elif left_count < right_count:
-            print(str(diff_left_right) + ": ->")
-            f.write("->")
-        else:
-            print(str(diff_left_right) + ": =")
-            f.write("=")
-        f.close()
+        output(left_count, right_count)
         left_count = right_count = 0
 
     # Display the processed frame
