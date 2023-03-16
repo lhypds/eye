@@ -2,7 +2,7 @@
 eye
 ===
 
-Small application `face.py' that track the face direction and output `<-` (left) / `->` (right) to a file.  
+Small application `face.py` that track the face direction and output `<-` (left) / `->` (right) to a file.  
 Then another program `move.py` read this file and and move the current active window to a specific monitor.  
 
 
