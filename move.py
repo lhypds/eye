@@ -21,20 +21,24 @@ def move_window_to_screen(hwnd, screen_number):
     window_rect = win32gui.GetWindowRect(hwnd)
     window_width = window_rect[2] - window_rect[0]
     window_height = window_rect[3] - window_rect[1]
+    window_x = window_rect[0]
+    window_y = window_rect[1]
 
     # Move the window to the target screen
-    win32gui.MoveWindow(hwnd, x + 0, y + 5, window_width, window_height, True)
+    win32gui.MoveWindow(hwnd, x + window_x, y + window_y, window_width, window_height, True)
+
+def get_direction():
+    f_path = Path("C:\\.keycache\\face_direction.txt")
+    f_path.touch(exist_ok=True)
+    f = open(f_path, "r")
+    face_direction = f.read()
+    f.close()
+    return face_direction
 
 # Get the handle of the active window
 hwnd = win32gui.GetForegroundWindow()
 
-# Move the active window to the second screen
-f_path = Path("C:\\.keycache\\face_direction.txt")
-f_path.touch(exist_ok=True)
-f = open(f_path, "r")
-face_direction = f.read()
-f.close()
-
+face_direction = get_direction()
 if face_direction == "->":
     move_window_to_screen(hwnd, 1)
     print("Move to right screen")
