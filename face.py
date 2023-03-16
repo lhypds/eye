@@ -33,11 +33,11 @@ def calculate_face_direction(shape):
     nose_to_eye_vec = eye_center - nose_tip
 
     if nose_to_eye_vec[0] > 0:
-        output("<-")
-        return "Left"
-    elif nose_to_eye_vec[0] < 0:
         output("->")
         return "Right"
+    elif nose_to_eye_vec[0] < 0:
+        output("<-")
+        return "Left"
     else:
         output("=")
         return "Center"
