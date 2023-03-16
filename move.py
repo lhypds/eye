@@ -3,29 +3,34 @@ import win32gui
 import win32api
 from pathlib import Path
 
+import os
+import dotenv
+dotenv.load_dotenv(dotenv.find_dotenv())
+
 def move_window_to_screen(hwnd, screen_number):
-    # Get information about the screen(s)
-    screens = win32api.EnumDisplayMonitors()
-    print("Number of screens: {}".format(len(screens)))
-    
-    if screen_number >= len(screens):
-        print("Invalid screen number")
-        return
+    if os.getenv("ENABLE") == "true":
+        # Get information about the screen(s)
+        screens = win32api.EnumDisplayMonitors()
+        print("Number of screens: {}".format(len(screens)))
+        
+        if screen_number >= len(screens):
+            print("Invalid screen number")
+            return
 
-    # Get the dimensions of the target screen
-    monitor_info = win32api.GetMonitorInfo(screens[screen_number][0])
-    work_area = monitor_info["Work"]
-    x, y, width, height = work_area
-    
-    # Get the original size of the window
-    window_rect = win32gui.GetWindowRect(hwnd)
-    window_width = window_rect[2] - window_rect[0]
-    window_height = window_rect[3] - window_rect[1]
-    window_x = window_rect[0]
-    window_y = window_rect[1]
+        # Get the dimensions of the target screen
+        monitor_info = win32api.GetMonitorInfo(screens[screen_number][0])
+        work_area = monitor_info["Work"]
+        x, y, width, height = work_area
+        
+        # Get the original size of the window
+        window_rect = win32gui.GetWindowRect(hwnd)
+        window_width = window_rect[2] - window_rect[0]
+        window_height = window_rect[3] - window_rect[1]
+        window_x = window_rect[0]
+        window_y = window_rect[1]
 
-    # Move the window to the target screen
-    win32gui.MoveWindow(hwnd, x + window_x, y + window_y, window_width, window_height, True)
+        # Move the window to the target screen
+        win32gui.MoveWindow(hwnd, x + window_x, y + window_y, window_width, window_height, True)
 
 def get_direction():
     f_path = Path("C:\\.keycache\\face_direction.txt")
