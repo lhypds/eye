@@ -11,7 +11,7 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 
 # Initialize dlib's face detector and facial landmark predictor
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+predictor = dlib.shape_predictor("C:\\code\\github-gcc\\eye\\shape_predictor_68_face_landmarks.dat")
 
 # Initialize the web camera
 vs = VideoStream(src=0).start()
