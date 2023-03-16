@@ -74,7 +74,7 @@ while True:
         if key == ord("q"):
             break
     
-    time.sleep(0.75)
+    time.sleep(0.5)
 
 cv2.destroyAllWindows()
 vs.stop()
