@@ -21,17 +21,20 @@ def move_window_to_screen(hwnd, screen_number):
     # Get the dimensions of the target screen
     monitor_info = win32api.GetMonitorInfo(screens[screen_number][0])
     work_area = monitor_info["Work"]
-    x, y, width, height = work_area
+    x, y, screen_width, screen_width = work_area
     
     # Get the original size of the window
     window_rect = win32gui.GetWindowRect(hwnd)
     window_width = window_rect[2] - window_rect[0]
     window_height = window_rect[3] - window_rect[1]
-    window_x = window_rect[0]
+    
+    # coordinate of the top left corner
+    # relative for all monitors
+    window_x = window_rect[0]  
     window_y = window_rect[1]
 
     # Move the window to the target screen
-    win32gui.MoveWindow(hwnd, x + window_x, y + window_y, window_width, window_height, True)
+    win32gui.MoveWindow(hwnd, x, y, window_width, window_height, True)
 
 def get_direction():
     f_path = Path("C:\\.keycache\\face_direction.txt")
