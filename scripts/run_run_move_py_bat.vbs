@@ -1,1 +1,1 @@
-CreateObject("WScript.Shell").Run "C:\code\github-gcc\eye\run_move_py.bat", 0, True
+CreateObject("WScript.Shell").Run "C:\code\github-gcc\eye\scrpits\run_move_py.bat", 0, True
