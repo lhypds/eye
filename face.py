@@ -14,7 +14,8 @@ detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("C:\\code\\github-gcc\\eye\\shape_predictor_68_face_landmarks.dat")
 
 # Initialize the web camera
-vs = VideoStream(src=0).start()
+src1 = int(os.getenv("CAMERA1_SRC"))
+vs = VideoStream(src=src1).start()
 time.sleep(2.0)
 
 # Output the count to a file
